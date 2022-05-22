@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "azusa-player-mobile",
+    "slug": "azusa-player-mobile",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
