@@ -12,6 +12,12 @@ import TrackPlayer, {
   useProgress,
   useTrackPlayerEvents,
 } from 'react-native-track-player';
+
+const events = [
+  Event.PlaybackState,
+  Event.PlaybackError,
+];
+
 import songs from '../asset/data.js'
 
 const { width, height } = Dimensions.get('window');
@@ -43,6 +49,20 @@ export default function MusicPlayer() {
   const scrollX = useRef(new Animated.Value(0)).current;
   const [songIndex, setSongIndex] = useState(0)
   const songSlider = useRef(null)
+
+  const [playerState, setPlayerState] = useState(null)
+
+  useTrackPlayerEvents(events, (event) => {
+    if (event.type === Event.PlaybackError) {
+      console.warn('An error occured while playing the current track.');
+    }
+    if (event.type === Event.PlaybackState) {
+      console.log('setPlayerState', event.state)
+      setPlayerState(event.state);
+    }
+  });
+
+  const isPlaying = playerState === State.Playing;
 
   useEffect(() => {
     setupPlayer()
@@ -134,8 +154,8 @@ export default function MusicPlayer() {
           <TouchableOpacity onPress={skipToPrevious}>
             <Ionicons name="play-skip-back-outline" size={35} color="#FFD369" style={{ marginTop: 25 }} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => togglePlayback(playbackState)}>
-            <Ionicons name={playbackState === State.Playing ? "ios-pause-circle" : "ios-play-circle"} size={75} color="#FFD369" />
+          <TouchableOpacity onPress={() => togglePlayback(playerState)}>
+            <Ionicons name={isPlaying ? "ios-pause-circle" : "ios-play-circle"} size={75} color="#FFD369" />
           </TouchableOpacity>
           <TouchableOpacity onPress={skipToNext}>
             <Ionicons name="play-skip-forward-outline" size={35} color="#FFD369" style={{ marginTop: 25 }} />

@@ -46,6 +46,7 @@ allprojects {
         }
 
         google()
+        jcenter()
         mavenCentral {
             // We don't want to fetch react-native from Maven Central as there are
             // older versions over there.
@@ -56,3 +57,4 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
