@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Input, Box, Heading, AspectRatio, Image, Text, Center, HStack, FlatList, Icon, VStack, Spacer } from "native-base";
-import { Dimensions, TouchableOpacity } from 'react-native'
+import { Dimensions, SafeAreaView, TouchableOpacity } from 'react-native'
 import { SearchDataBVID } from '../asset/SearchData.js'
 import AppLoading from 'expo-app-loading';
 import { useFonts, NotoSans_400Regular } from '@expo-google-fonts/noto-sans';
 import { second2Minute } from '../utils/common.js'
 import { Ionicons, Feather } from "@expo/vector-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
+
 const { width, height } = Dimensions.get('window');
 const data = [{
     id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -44,6 +44,7 @@ export default function SearchScreen({ navigation }) {
 
 
     return (
+        <SafeAreaView>
         <Box alignItems="center" >
 
             <Box m="2" rounded="2xl" borderColor="coolGray.200" borderWidth="1"
@@ -111,5 +112,6 @@ export default function SearchScreen({ navigation }) {
                 </Box>
             </Box>
         </Box>
+        </SafeAreaView>
     )
 };

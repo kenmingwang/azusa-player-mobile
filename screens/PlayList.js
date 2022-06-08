@@ -4,9 +4,7 @@ import MusicPlayer from '../component/MusicPlayer'
 
 export default function PlayListScreen({ route, navigation }) {
     return (
-        <View style={{ flex: 1 }}>
-            <MusicPlayer />
-        </View>
+        <MusicPlayer />
     );
 }
 const styles = StyleSheet.create({

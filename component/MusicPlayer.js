@@ -1,5 +1,5 @@
 import React, { Profiler, useEffect, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, Text, View, Dimensions, TouchableOpacity, Easing, ImageBackground, Animated } from 'react-native';
+import { StyleSheet, Platform, Text, View, Dimensions, TouchableOpacity, Easing, ImageBackground, Animated } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Slider from '@react-native-community/slider';
@@ -81,7 +81,7 @@ export default function MusicPlayer({ data, navigation }) {
   const startArtWorkRotate = (isPlaying) => {
     if (isPlaying) {
       console.log('spin starts')
-      spinValue.setOffset(spinningOffset)
+      //spinValue.setOffset(spinningOffset)
       console.log('spin start offset:', spinningOffset)
       Animated.loop(
         Animated.timing(spinValue, {
@@ -129,17 +129,17 @@ export default function MusicPlayer({ data, navigation }) {
       }}>
         <View style={styles.artworkWrapper}>
           <Animated.Image
-            source={{ uri: "http://i1.hdslb.com/bfs/archive/a68dce1b82b03162be359b1ebf1ceda202eb93fa.jpg" }}
+            source={{ uri: "http://i1.hdslb.com/bfs/archive/869825711c913623e2fb5713452a0a70869c3b54.jpg" }}
             style={{ transform: [{ rotate: spin }], ...styles.artworkImage }} />
         </View>
       </Animated.View>
     );
   }
-  const image = { uri: "http://i1.hdslb.com/bfs/archive/a68dce1b82b03162be359b1ebf1ceda202eb93fa.jpg" };
+  const image = { uri: "http://i1.hdslb.com/bfs/archive/869825711c913623e2fb5713452a0a70869c3b54.jpg" };
   return (
 
-    <SafeAreaView style={styles.container}>
-      <ImageBackground opacity={0.4} blurRadius={45} source={image} resizeMode="cover" style={styles.image}>
+    <View style={styles.container}>
+      <ImageBackground opacity={0.8} blurRadius={45} source={image} resizeMode="cover" style={styles.image}>
         <View style={styles.mainContainer}>
 
           <View style={{ width: width }}>
@@ -216,7 +216,7 @@ export default function MusicPlayer({ data, navigation }) {
 
         </View>
       </ImageBackground>
-    </SafeAreaView >
+    </View >
   );
 }
 
@@ -235,7 +235,13 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     width: width,
     alignItems: 'center',
-    paddingVertical: 15
+    paddingVertical: 15,
+    ...Platform.select({
+      ios:{
+        paddingBottom: 60
+      }
+    })
+    
   },
   bottomControl: {
     flexDirection: 'row',
@@ -282,7 +288,8 @@ const styles = StyleSheet.create({
     width: 350,
     height: 40,
     marginTop: 25,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    
   },
   progressLabelContainer: {
     width: 350,
@@ -297,6 +304,7 @@ const styles = StyleSheet.create({
     width: '60%',
     justifyContent: 'space-between',
     marginTop: 15,
+
   },
   image: {
     flex: 1,
