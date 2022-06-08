@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SearchScreen from '../screens/Search'
 import PlayListScreen from '../screens/PlayList'
@@ -10,6 +11,16 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 // const tabBarHeight = useBottomTabBarHeight();
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function ModalScreen({ navigation }) {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontSize: 30 }}>This is a modal!</Text>
+            <Button onPress={() => navigation.goBack()} title="Dismiss" />
+        </View>
+    );
+}
 
 const CustomTabBarButton = ({ children, opPress }) => {
     return (
@@ -33,7 +44,8 @@ const CustomTabBarButton = ({ children, opPress }) => {
         </TouchableOpacity >
     )
 }
-export default function () {
+
+function BottomTab() {
     return (
         <Tab.Navigator
             screenOptions={
@@ -60,7 +72,6 @@ export default function () {
                     tabBarStyle: {
                         elevation: 0,
                         backgroundColor: '#ffffff',
-                        height: 50,
                         ...styles.shadow
                         // marginBottom: tabBarHeight
                     },
@@ -68,6 +79,7 @@ export default function () {
                 }}>
             <Tab.Screen name="SearchScreen" component={SearchScreen}
                 options={{
+                    headerShown: false,
                     // tabBarLabel: 'Profile',
                     tabBarIcon: ({ focused, color, size }) => (
                         // <MaterialCommunityIcons name="account" color={color} size={size} />
@@ -101,7 +113,20 @@ export default function () {
                     tabBarButton: (props) => (<CustomTabBarButton {...props} />)
                 }} />
             <Tab.Screen name="PlayerScreen" component={PlayListScreen} />
-        </Tab.Navigator>
+        </Tab.Navigator>)
+}
+export default function () {
+    return (
+        <Stack.Navigator >
+            <Stack.Screen options={{
+                headerShown: false
+            }} name="Home" component={BottomTab} />
+            <Stack.Screen options={{
+                headerTransparent: true,
+                title: ""
+            }} name="Player" component={PlayListScreen} />
+        </Stack.Navigator>
+
     )
 }
 

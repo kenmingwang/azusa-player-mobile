@@ -1,5 +1,5 @@
 import React, { Profiler, useEffect, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, Text, View, Dimensions, TouchableOpacity, Image, FlatList, Animated } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View, Dimensions, TouchableOpacity, Easing, ImageBackground, Animated } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Slider from '@react-native-community/slider';
@@ -19,16 +19,21 @@ const events = [
 ];
 
 import songs from '../asset/data.js'
+import { Center } from 'native-base';
 
 const { width, height } = Dimensions.get('window');
 const setupPlayer = async () => {
+
   await TrackPlayer.setupPlayer()
   await TrackPlayer.add(songs)
 }
+const spinValue = new Animated.Value(0)
+let spinningOffset = 0
 
 const togglePlayback = async (playbackState) => {
   const currentTrack = await TrackPlayer.getCurrentTrack()
   let trackObject = await TrackPlayer.getTrack(currentTrack);
+  console.log(trackObject);
   console.log(`Title: ${trackObject.title}`);
   console.log(playbackState)
   console.log('toggle')
@@ -43,29 +48,19 @@ const togglePlayback = async (playbackState) => {
   }
 }
 
-export default function MusicPlayer() {
-
+export default function MusicPlayer({ data, navigation }) {
+  console.log(data)
   const playbackState = usePlaybackState()
   const scrollX = useRef(new Animated.Value(0)).current;
   const [songIndex, setSongIndex] = useState(0)
   const songSlider = useRef(null)
 
-  const [playerState, setPlayerState] = useState(null)
+  const isPlaying = playbackState === State.Playing;
 
-  useTrackPlayerEvents(events, (event) => {
-    if (event.type === Event.PlaybackError) {
-      console.warn('An error occured while playing the current track.');
-    }
-    if (event.type === Event.PlaybackState) {
-      console.log('setPlayerState', event.state)
-      setPlayerState(event.state);
-    }
-  });
-
-  const isPlaying = playerState === State.Playing;
 
   useEffect(() => {
     setupPlayer()
+
 
     scrollX.addListener(({ value }) => {
       console.log('Scrool X', scrollX)
@@ -78,6 +73,40 @@ export default function MusicPlayer() {
       scrollX.removeAllListeners()
     }
   }, [])
+
+  useEffect(() => {
+    startArtWorkRotate(isPlaying)
+  }, [playbackState])
+
+  const startArtWorkRotate = (isPlaying) => {
+    if (isPlaying) {
+      console.log('spin starts')
+      spinValue.setOffset(spinningOffset)
+      console.log('spin start offset:', spinningOffset)
+      Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 15000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })).start()
+    } else {
+      console.log('spin ends')
+      spinValue.stopAnimation(currentValue => {
+        console.log('spin end offset:', currentValue)
+        spinningOffset = currentValue;
+      })
+    }
+  }
+
+  const stopArtWorkRotate = () => {
+    Animated.timing(spinValue).stop();
+  }
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
   const skipToNext = () => {
     songSlider.current.scrollToOffset({
@@ -99,90 +128,95 @@ export default function MusicPlayer() {
         alignItems: 'center'
       }}>
         <View style={styles.artworkWrapper}>
-          <Image
-            source={item.image}
-            style={styles.artworkImage}></Image>
+          <Animated.Image
+            source={{ uri: "http://i1.hdslb.com/bfs/archive/a68dce1b82b03162be359b1ebf1ceda202eb93fa.jpg" }}
+            style={{ transform: [{ rotate: spin }], ...styles.artworkImage }} />
         </View>
       </Animated.View>
     );
   }
-
+  const image = { uri: "http://i1.hdslb.com/bfs/archive/a68dce1b82b03162be359b1ebf1ceda202eb93fa.jpg" };
   return (
+
     <SafeAreaView style={styles.container}>
-      <View style={styles.mainContainer}>
-        <View style={{ width: width }}>
-          <Animated.FlatList
-            ref={songSlider}
-            renderItem={renderSongs}
-            data={songs}
-            keyExtractor={(item) => item.id}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            scrollEventThrottle={16}
-            onScroll={Animated.event(
-              [{
-                nativeEvent: {
-                  contentOffset: { x: scrollX }
-                }
-              }],
-              { useNativeDriver: true }
-            )}
-          />
-        </View>
-        <View>
-          <Text style={styles.title}>{songs[songIndex].title}</Text>
-          <Text style={styles.artist}>{songs[songIndex].artist}</Text>
-        </View>
-        <View>
-          <Slider
-            style={styles.progressContainer}
-            value={10}
-            minimumValue={0}
-            maximumValue={100}
-            thumbTintColor="FFD369"
-            minimumTrackTintColor='FFD369'
-            maximumTrackTintColor='#FFF'
-            onSlidingComplete={() => { }} />
-          <View style={styles.progressLabelContainer}>
-            <Text style={styles.progressLabelTxt}>0:00</Text>
-            <Text style={styles.progressLabelTxt}>3:55</Text>
+      <ImageBackground opacity={0.4} blurRadius={45} source={image} resizeMode="cover" style={styles.image}>
+        <View style={styles.mainContainer}>
+
+          <View style={{ width: width }}>
+            <Animated.FlatList
+              ref={songSlider}
+              renderItem={renderSongs}
+              data={songs}
+              keyExtractor={(item) => item.id}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              scrollEventThrottle={16}
+              onScroll={Animated.event(
+                [{
+                  nativeEvent: {
+                    contentOffset: { x: scrollX }
+                  }
+                }],
+                { useNativeDriver: true }
+              )}
+            />
           </View>
+          <View>
+            <Text style={styles.title}>{songs[songIndex].title}</Text>
+            <Text style={styles.artist}>{songs[songIndex].artist}</Text>
+          </View>
+          <View>
+            <Slider
+              style={styles.progressContainer}
+              value={10}
+              minimumValue={0}
+              maximumValue={100}
+              thumbTintColor="FFD369"
+              minimumTrackTintColor='FFD369'
+              maximumTrackTintColor='#FFF'
+              onSlidingComplete={() => { }} />
+            <View style={styles.progressLabelContainer}>
+              <Text style={styles.progressLabelTxt}>0:00</Text>
+              <Text style={styles.progressLabelTxt}>3:55</Text>
+            </View>
+          </View>
+
+          <View style={styles.musicControlls}>
+            <TouchableOpacity onPress={skipToPrevious}>
+              <Ionicons name="play-skip-back-outline" size={35} color="#FFD369" style={{ marginTop: 25 }} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => togglePlayback(playbackState)}>
+              <Ionicons name={isPlaying ? "ios-pause-circle" : "ios-play-circle"} size={75} color="#FFD369" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={skipToNext}>
+              <Ionicons name="play-skip-forward-outline" size={35} color="#FFD369" style={{ marginTop: 25 }} />
+            </TouchableOpacity>
+          </View>
+
+
         </View>
 
-        <View style={styles.musicControlls}>
-          <TouchableOpacity onPress={skipToPrevious}>
-            <Ionicons name="play-skip-back-outline" size={35} color="#FFD369" style={{ marginTop: 25 }} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => togglePlayback(playerState)}>
-            <Ionicons name={isPlaying ? "ios-pause-circle" : "ios-play-circle"} size={75} color="#FFD369" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={skipToNext}>
-            <Ionicons name="play-skip-forward-outline" size={35} color="#FFD369" style={{ marginTop: 25 }} />
-          </TouchableOpacity>
+        <View style={styles.bottomContainer}>
+          <View style={styles.bottomControl}>
+
+            <TouchableOpacity onPress={() => { }}>
+              <Ionicons name="heart-outline" size={30} color="#f3f4f6" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => { }}>
+              <Ionicons name="repeat" size={30} color="#f3f4f6" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => { }}>
+              <Ionicons name="share-outline" size={30} color="#f3f4f6" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => { }}>
+              <Ionicons name="ellipsis-horizontal" size={30} color="#f3f4f6" />
+            </TouchableOpacity>
+          </View>
+
         </View>
-
-
-      </View>
-
-      <View style={styles.bottomContainer}>
-        <View style={styles.bottomControl}>
-
-          <TouchableOpacity onPress={() => { }}>
-            <Ionicons name="heart-outline" size={30} color="#777777" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { }}>
-            <Ionicons name="repeat" size={30} color="#777777" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { }}>
-            <Ionicons name="share-outline" size={30} color="#777777" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { }}>
-            <Ionicons name="ellipsis-horizontal" size={30} color="#777777" />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </SafeAreaView>
+      </ImageBackground>
+    </SafeAreaView >
   );
 }
 
@@ -197,7 +231,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bottomContainer: {
-    borderTopColor: '#303E46',
+    borderTopColor: '#9ca3af',
     borderTopWidth: 1,
     width: width,
     alignItems: 'center',
@@ -223,12 +257,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
 
     //shadow for andriod
-    elevation: 5,
+    elevation: 10,
+    alignItems: 'center',
+    borderRadius: 155,
   },
   artworkImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 15
+    borderRadius: 155,
   },
   title: {
     fontSize: 18,
@@ -261,5 +297,9 @@ const styles = StyleSheet.create({
     width: '60%',
     justifyContent: 'space-between',
     marginTop: 15,
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center"
   }
 });
