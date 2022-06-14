@@ -26,7 +26,7 @@ const setupPlayer = async () => {
   await TrackPlayer.setupPlayer()
   await TrackPlayer.add(songs)
 }
-const spinValue = new Animated.Value(0)
+
 let spinningOffset = 0
 
 const togglePlayback = async (playbackState) => {
@@ -56,6 +56,8 @@ export default function MusicPlayer({ data, navigation }) {
 
   const isPlaying = playbackState === State.Playing;
 
+  const spinValue = useRef(new Animated.Value(0)).current
+  const [spinningOffset, setSpinningOffset] = useState(0)
 
   useEffect(() => {
     setupPlayer()
@@ -67,6 +69,13 @@ export default function MusicPlayer({ data, navigation }) {
       setSongIndex(index)
       console.log('index: ', index)
     })
+
+    Animated.timing(spinValue, {
+      toValue: 1,
+      duration: 15000,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start()
 
     return () => {
       scrollX.removeAllListeners()
@@ -82,7 +91,6 @@ export default function MusicPlayer({ data, navigation }) {
       console.log('spin starts')
       spinValue.setOffset(spinningOffset)
       spinValue.resetAnimation(() => {
-
         console.log('spin start offset:', spinValue)
         Animated.loop(
           Animated.timing(spinValue, {
@@ -90,13 +98,13 @@ export default function MusicPlayer({ data, navigation }) {
             duration: 15000,
             easing: Easing.linear,
             useNativeDriver: true,
-          })).start()
+          })).start(() => console.log("start ended"))
       })
     } else {
       console.log('spin ends')
       spinValue.stopAnimation(currentValue => {
         console.log('spin end offset:', currentValue)
-        spinningOffset = currentValue;
+        setSpinningOffset(currentValue);
       })
     }
   }
@@ -114,18 +122,20 @@ export default function MusicPlayer({ data, navigation }) {
     songSlider.current.scrollToOffset({
       offset: (songIndex + 1) * width,
     })
+    console.log('spin skipToNext')
     spinValue.stopAnimation()
     spinValue.resetAnimation()
-    spinningOffset = 0;
+    setSpinningOffset(0)
   }
 
   const skipToPrevious = () => {
     songSlider.current.scrollToOffset({
       offset: (songIndex - 1) * width,
     })
+    console.log('spin skipToPrevious')
     spinValue.stopAnimation()
     spinValue.resetAnimation()
-    spinningOffset = 0;
+    setSpinningOffset(0)
   }
 
   const renderSongs = ({ index, item }) => {
