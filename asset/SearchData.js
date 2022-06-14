@@ -29,8 +29,8 @@ export const SearchDataBVID = {
             cid: 511691036,
             page: 2,
             from: "vupload",
-            part: "1",
-            duration: 404,
+            part: "阿梓 溯",
+            duration: 194,
             vid: "",
             weblink: "",
             dimension: {

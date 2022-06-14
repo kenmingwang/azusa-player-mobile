@@ -114,12 +114,18 @@ export default function MusicPlayer({ data, navigation }) {
     songSlider.current.scrollToOffset({
       offset: (songIndex + 1) * width,
     })
+    spinValue.stopAnimation()
+    spinValue.resetAnimation()
+    spinningOffset = 0;
   }
 
   const skipToPrevious = () => {
     songSlider.current.scrollToOffset({
       offset: (songIndex - 1) * width,
     })
+    spinValue.stopAnimation()
+    spinValue.resetAnimation()
+    spinningOffset = 0;
   }
 
   const renderSongs = ({ index, item }) => {
@@ -278,7 +284,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    color: '#7528fa',
+    color: '#a069ff',
+    // textShadowRadius: 5
   },
   artist: {
     fontSize: 16,
