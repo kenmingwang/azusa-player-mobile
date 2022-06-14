@@ -5,7 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import SearchScreen from '../screens/Search'
 import PlayListScreen from '../screens/PlayList'
 import PlayerScreen from '../screens/Player'
-
+import { AntDesign } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 

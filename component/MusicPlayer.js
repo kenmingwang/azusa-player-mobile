@@ -137,10 +137,10 @@ export default function MusicPlayer({ data, navigation }) {
       </Animated.View>
     );
   }
-  const image = { uri: "http://i1.hdslb.com/bfs/archive/a68dce1b82b03162be359b1ebf1ceda202eb93fa.jpg" };
+  const image = { uri: "http://i1.hdslb.com/bfs/archive/869825711c913623e2fb5713452a0a70869c3b54.jpg" };
   return (
 
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground opacity={0.4} blurRadius={45} source={{ uri: songs[songIndex].image }} resizeMode="cover" style={styles.image}>
         <View style={styles.mainContainer}>
 
@@ -218,7 +218,7 @@ export default function MusicPlayer({ data, navigation }) {
 
         </View>
       </ImageBackground>
-    </SafeAreaView >
+    </View >
   );
 }
 
@@ -237,7 +237,13 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     width: width,
     alignItems: 'center',
-    paddingVertical: 15
+    paddingVertical: 15,
+    ...Platform.select({
+      ios: {
+        paddingBottom: 60
+      }
+    })
+
   },
   bottomControl: {
     flexDirection: 'row',
@@ -284,7 +290,8 @@ const styles = StyleSheet.create({
     width: 350,
     height: 40,
     marginTop: 25,
-    flexDirection: 'row'
+    flexDirection: 'row',
+
   },
   progressLabelContainer: {
     width: 350,
@@ -299,6 +306,7 @@ const styles = StyleSheet.create({
     width: '60%',
     justifyContent: 'space-between',
     marginTop: 15,
+
   },
   image: {
     flex: 1,
