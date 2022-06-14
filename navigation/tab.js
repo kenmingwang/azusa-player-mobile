@@ -123,7 +123,7 @@ export default function () {
             }} name="Home" component={BottomTab} />
             <Stack.Screen options={{
                 headerTransparent: true,
-                title: ""
+                title: "【菫時】銀色飛行船"
             }} name="Player" component={PlayListScreen} />
         </Stack.Navigator>
 

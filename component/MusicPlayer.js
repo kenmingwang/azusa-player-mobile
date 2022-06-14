@@ -1,5 +1,5 @@
 import React, { Profiler, useEffect, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, Text, View, Dimensions, TouchableOpacity, Easing, ImageBackground, Animated } from 'react-native';
+import { UIManager, StyleSheet, SafeAreaView, Text, View, Dimensions, TouchableOpacity, Easing, ImageBackground, Animated } from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Slider from '@react-native-community/slider';
@@ -19,7 +19,6 @@ const events = [
 ];
 
 import songs from '../asset/data.js'
-import { Center } from 'native-base';
 
 const { width, height } = Dimensions.get('window');
 const setupPlayer = async () => {
@@ -82,14 +81,17 @@ export default function MusicPlayer({ data, navigation }) {
     if (isPlaying) {
       console.log('spin starts')
       spinValue.setOffset(spinningOffset)
-      console.log('spin start offset:', spinningOffset)
-      Animated.loop(
-        Animated.timing(spinValue, {
-          toValue: 1,
-          duration: 15000,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        })).start()
+      spinValue.resetAnimation(() => {
+
+        console.log('spin start offset:', spinValue)
+        Animated.loop(
+          Animated.timing(spinValue, {
+            toValue: 1,
+            duration: 15000,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          })).start()
+      })
     } else {
       console.log('spin ends')
       spinValue.stopAnimation(currentValue => {
@@ -129,7 +131,7 @@ export default function MusicPlayer({ data, navigation }) {
       }}>
         <View style={styles.artworkWrapper}>
           <Animated.Image
-            source={{ uri: "http://i1.hdslb.com/bfs/archive/a68dce1b82b03162be359b1ebf1ceda202eb93fa.jpg" }}
+            source={{ uri: songs[songIndex].image }}
             style={{ transform: [{ rotate: spin }], ...styles.artworkImage }} />
         </View>
       </Animated.View>
@@ -139,7 +141,7 @@ export default function MusicPlayer({ data, navigation }) {
   return (
 
     <SafeAreaView style={styles.container}>
-      <ImageBackground opacity={0.4} blurRadius={45} source={image} resizeMode="cover" style={styles.image}>
+      <ImageBackground opacity={0.4} blurRadius={45} source={{ uri: songs[songIndex].image }} resizeMode="cover" style={styles.image}>
         <View style={styles.mainContainer}>
 
           <View style={{ width: width }}>
@@ -270,7 +272,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    color: '#1a701a',
+    color: '#7528fa',
   },
   artist: {
     fontSize: 16,
