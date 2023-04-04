@@ -8,6 +8,11 @@
     ],
     "ios": {
       "bundleIdentifier": "org.name.azusaplayermobile"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "717ce1dd-f525-48dd-9360-3f4e613e7f24"
+      }
     }
   }
 }
